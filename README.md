@@ -34,11 +34,22 @@ A SessionStart hook reminds you when vault VERSION ≠ plugin VERSION.
 /plugin uninstall thinking-protocol-plugin
 ```
 
-(Placeholder — fully populated in Task 11.)
+This removes the plugin and Claude Code auto-cleans `${CLAUDE_PLUGIN_DATA}`. System files already deposited in your vault (`.claude/`, `Core_Thinking_Protocol.md`, etc.) remain — they are your vault's content. To remove them, delete or roll back from `_backup/<latest>/`.
+
+<!-- TASK-11-FULL-CONTENT: full Uninstall flow elaboration replaces this section -->
 
 ## Rollback
 
-(Placeholder — fully populated in Task 11.)
+The most recent `/migrate` invocation creates a backup at `_backup/<timestamp>/`. To rollback:
+
+```
+cp -r _backup/<latest_timestamp>/* .
+./setup.sh --verify
+```
+
+After rollback, optionally `/plugin uninstall thinking-protocol-plugin`.
+
+<!-- TASK-11-FULL-CONTENT: full Rollback flow elaboration replaces this section -->
 
 ## Versioning
 
