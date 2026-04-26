@@ -24,7 +24,11 @@ if [[ -f "$FEED_FILE" ]]; then
   NOW="$(date +%s)"
   DAYS_OLD=$(( (NOW - LAST_MOD) / 86400 ))
   if [[ "$DAYS_OLD" -ge 1 ]]; then
-    FEED_REMINDER="⚠️ Research feed last updated ${DAYS_OLD} day(s) ago. Run 'python3 scripts/fetch_research.py' to fetch new articles, then invoke the 'researcher' subagent to absorb them via the Research Integration Protocol (CLAUDE.md §7)."
+    FEED_REMINDER="⚠️ Research feed last updated ${DAYS_OLD} day(s) ago.
+- Auto-fetch was scheduled but feed is still stale (check _logs/research-fetch.log)
+- Or run manually: 'python3 scripts/fetch_research.py'
+- To absorb new entries through Steps 2-6: invoke 'researcher' subagent
+  → Claude can dispatch it directly: 'researcher subagent에게 새 entries 처리 부탁해'"
   fi
 else
   FEED_LINE="(feed file missing)"
