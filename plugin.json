@@ -1,0 +1,12 @@
+{
+  "name": "thinking-protocol-plugin",
+  "version": "0.4.0",
+  "description": "System layer for the Thinking-Protocol Second Brain vault. Provides skills, agents, hooks, Core protocol files, and the /migrate command.",
+  "author": "bm1120",
+  "license": "private",
+  "keywords": ["thinking-protocol", "second-brain", "decision-making"],
+  "skills": "system_files/.claude/skills",
+  "agents": "system_files/.claude/agents",
+  "commands": "commands",
+  "hooks": "hooks/plugin-hooks.json"
+}
