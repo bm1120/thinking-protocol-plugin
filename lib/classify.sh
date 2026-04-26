@@ -3,6 +3,7 @@
 # Sourced by install/update/tests. Defines: classify_file <abs_path|rel_path>
 # Outputs one of: system | user | hybrid | excluded | system-fork
 # Exit code 0 always (caller handles class).
+# Note: sourcing this file enables 'set -euo pipefail' in the caller.
 #
 # Path handling: input may be absolute (e.g. /vault/.claude/skills/foo/SKILL.md)
 # or vault-relative (e.g. .claude/skills/foo/SKILL.md). The classifier
@@ -16,7 +17,7 @@ _read_frontmatter_system() {
   local file="$1"
   awk '
     /^---$/ { if (in_fm) { exit } else { in_fm=1; next } }
-    in_fm && /^system:/ { gsub(/^system:[[:space:]]*/, ""); print; exit }
+    in_fm && /^system:/ { sub(/^system:[[:space:]]*/, ""); sub(/[[:space:]]+$/, ""); sub(/^["'\'']/, ""); sub(/["'\'']$/, ""); print; exit }
   ' "$file" 2>/dev/null
 }
 
@@ -115,5 +116,8 @@ classify_file() {
 
 # Allow sourcing or direct invocation: ./classify.sh <path>
 if [[ "${BASH_SOURCE[0]}" == "${0:-}" ]]; then
+  if [[ $# -lt 1 ]]; then
+    echo "usage: $0 <path>" >&2; exit 2
+  fi
   classify_file "$1"
 fi
