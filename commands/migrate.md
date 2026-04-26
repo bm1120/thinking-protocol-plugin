@@ -3,6 +3,16 @@ name: migrate
 description: Bootstrap or migrate this vault's system layer (skills/agents/hooks/Core protocol). Greenfield install OR existing-vault migration with auto-backup. Idempotent.
 ---
 
+**To run this command, execute the script colocated with this definition:**
+
+```
+bash "${CLAUDE_PLUGIN_ROOT}/commands/migrate.sh"
+```
+
+If `${CLAUDE_PLUGIN_ROOT}` is not defined in your context, the script lives at `commands/migrate.sh` next to this file in the plugin root.
+
+---
+
 # /migrate
 
 Run from a vault directory. The command:
@@ -13,4 +23,4 @@ Run from a vault directory. The command:
 4. After migration, prompts to schedule the research feed fetch via crontab (idempotent).
 
 Backup location: `_backup/<YYYY-MM-DD-HHMMSS>/`.
-Rollback: `cp -r _backup/<latest>/* .` then `./setup.sh --verify`.
+Rollback: `cp -rp _backup/<latest>/. .` then `./setup.sh --verify`.

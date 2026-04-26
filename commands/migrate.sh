@@ -21,8 +21,8 @@ if detect_vault; then
        && [[ "$VAULT_VERSION" != "$PLUGIN_VERSION" ]]; then
     echo "WARNING: vault VERSION ($VAULT_VERSION) > plugin VERSION ($PLUGIN_VERSION)."
     echo "Continue anyway? [y/N]"
-    read -r ans
-    [[ "$ans" == "y" || "$ans" == "Y" ]] || { echo "Aborted."; exit 1; }
+    read -r ans || ans=""
+    [[ "$ans" == "y" || "$ans" == "Y" ]] || { echo "Aborted (no confirmation)."; exit 1; }
   fi
 
   ts="$(date +%Y-%m-%d-%H%M%S)"

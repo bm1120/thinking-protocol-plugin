@@ -78,7 +78,9 @@ write_gitignore_entries() {
 
 # Idempotent: returns 0 if entry added or already present, 1 if user declined.
 register_cron_if_consented() {
-  local cmd="cd $(pwd) && python3 scripts/fetch_research.py >> _logs/research-fetch.log 2>&1"
+  local pwd_q
+  printf -v pwd_q '%q' "$(pwd)"
+  local cmd="cd $pwd_q && python3 scripts/fetch_research.py >> _logs/research-fetch.log 2>&1"
   local marker="thinking-protocol-plugin"
 
   if crontab -l 2>/dev/null | grep -qF "$marker"; then
@@ -90,7 +92,7 @@ register_cron_if_consented() {
   echo "Schedule daily research feed fetch at 09:00 (your local timezone)?"
   echo "Adds to user crontab: 0 9 * * * $cmd  # $marker"
   echo "Confirm [y/N]:"
-  read -r ans
+  read -r ans || ans=""
   if [[ "$ans" == "y" || "$ans" == "Y" ]]; then
     (crontab -l 2>/dev/null; echo "0 9 * * * $cmd  # $marker") | crontab -
     echo "Cron entry added. Verify: crontab -l | grep $marker"
