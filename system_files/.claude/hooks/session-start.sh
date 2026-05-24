@@ -19,8 +19,9 @@ FEED_REMINDER=""
 FEED_FILE="$VAULT/00_Idea_Inbox/Automated_Research_Feed.md"
 if [[ -f "$FEED_FILE" ]]; then
   FEED_LINE="$(grep -m1 '업데이트' "$FEED_FILE" 2>/dev/null || echo "(no update marker found)")"
-  # Staleness check — reminder when feed file is ≥ 1 day old (macOS stat -f).
-  LAST_MOD="$(stat -f '%m' "$FEED_FILE" 2>/dev/null || echo 0)"
+  # Staleness check — reminder when feed file is ≥ 1 day old.
+  # Portable mtime: BSD/macOS `stat -f %m`, fall back to GNU/Linux `stat -c %Y`.
+  LAST_MOD="$(stat -f '%m' "$FEED_FILE" 2>/dev/null || stat -c '%Y' "$FEED_FILE" 2>/dev/null || echo 0)"
   NOW="$(date +%s)"
   DAYS_OLD=$(( (NOW - LAST_MOD) / 86400 ))
   if [[ "$DAYS_OLD" -ge 1 ]]; then
