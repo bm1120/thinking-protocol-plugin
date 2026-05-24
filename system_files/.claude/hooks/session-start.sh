@@ -4,7 +4,7 @@
 # Output format: Claude Code hook v2 — we emit a JSON blob with hookSpecificOutput.additionalContext.
 set -euo pipefail
 
-VAULT="${CLAUDE_PROJECT_DIR:-/Users/choeingyu/Documents/docker/Business_SecondBrain}"
+VAULT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 TODAY="$(date '+%Y-%m-%d %H:%M %Z')"
 
 CHANGELOG_TAIL=""

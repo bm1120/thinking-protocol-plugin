@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MIGRATE_CMD="$PLUGIN_ROOT/commands/migrate.sh"
+EXPECTED_VERSION="$(cat "$PLUGIN_ROOT/VERSION")"
 
 WORK="$(mktemp -d)"
 trap "rm -rf $WORK" EXIT
@@ -14,7 +15,7 @@ check() { local label="$1" cond="$2"; if eval "$cond"; then PASS=$((PASS+1)); ec
 
 # 1. Greenfield install via /migrate (decline cron with "n")
 echo "n" | bash "$MIGRATE_CMD"
-check "greenfield_version" '[[ "$(cat VERSION)" == "0.4.0" ]]'
+check "greenfield_version" '[[ "$(cat VERSION)" == "$EXPECTED_VERSION" ]]'
 check "greenfield_agents" '[[ -d .claude/agents ]] && [[ $(ls .claude/agents | wc -l) -ge 6 ]]'
 check "greenfield_skills" '[[ -d .claude/skills ]] && [[ $(ls .claude/skills | wc -l) -ge 16 ]]'
 check "gitignore_backup" 'grep -qxF "_backup/" .gitignore'
@@ -35,7 +36,7 @@ echo "0.3.0" > VERSION
 echo "n" | bash "$MIGRATE_CMD"
 
 # 5. Assertions
-check "post_migration_version" '[[ "$(cat VERSION)" == "0.4.0" ]]'
+check "post_migration_version" '[[ "$(cat VERSION)" == "$EXPECTED_VERSION" ]]'
 check "backup_created" '[[ -d _backup ]] && [[ $(ls _backup | wc -l) -ge 1 ]]'
 latest_backup="$(ls -1d _backup/*/ | tail -1)"
 check "manifest_present" '[[ -f "${latest_backup}_manifest.txt" ]]'
