@@ -19,17 +19,16 @@ FEED_REMINDER=""
 FEED_FILE="$VAULT/00_Idea_Inbox/Automated_Research_Feed.md"
 if [[ -f "$FEED_FILE" ]]; then
   FEED_LINE="$(grep -m1 '업데이트' "$FEED_FILE" 2>/dev/null || echo "(no update marker found)")"
-  # Staleness check — reminder when feed file is ≥ 1 day old.
+  # Staleness check — the auto-feed is a SECONDARY, low-yield source (book/manual
+  # research-integration is the primary path), so only nudge after ≥ 7 days, not daily.
   # Portable mtime: BSD/macOS `stat -f %m`, fall back to GNU/Linux `stat -c %Y`.
   LAST_MOD="$(stat -f '%m' "$FEED_FILE" 2>/dev/null || stat -c '%Y' "$FEED_FILE" 2>/dev/null || echo 0)"
   NOW="$(date +%s)"
   DAYS_OLD=$(( (NOW - LAST_MOD) / 86400 ))
-  if [[ "$DAYS_OLD" -ge 1 ]]; then
-    FEED_REMINDER="⚠️ Research feed last updated ${DAYS_OLD} day(s) ago.
-- Auto-fetch was scheduled but feed is still stale (check _logs/research-fetch.log)
-- Or run manually: 'python3 scripts/fetch_research.py'
-- To absorb new entries through Steps 2-6: invoke 'researcher' subagent
-  → Claude can dispatch it directly: 'researcher subagent에게 새 entries 처리 부탁해'"
+  if [[ "$DAYS_OLD" -ge 7 ]]; then
+    FEED_REMINDER="ℹ️ Research feed last updated ${DAYS_OLD} day(s) ago (secondary source — low yield to date).
+- Optional refresh: 'python3 scripts/fetch_research.py'
+- Primary path for absorbing research is book/article → research-integration skill."
   fi
 else
   FEED_LINE="(feed file missing)"
