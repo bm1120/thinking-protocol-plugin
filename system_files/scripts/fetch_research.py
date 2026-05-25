@@ -112,13 +112,28 @@ def log_skip(source_name, url, title, rule_name):
 
 def main():
     today_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-    
+
+    # Read existing feed once: used for dedupe (skip URLs already present —
+    # including prior human-rejected entries, which remain in the feed marked
+    # [x]) and for insertion below. Resolves Watch 25 resurfacing.
+    existing_content = ""
+    if os.path.exists(OUTPUT_FILE):
+        with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+            existing_content = f.read()
+
     new_entries = []
     for source_name, url in FEEDS:
         items = fetch_and_parse(url)
         # 각 소스별 최신 15개 기사를 검사하여 키워드가 일치하는 상위 3개만 추출
         accepted = 0
         for item in items[:15]:
+            # Dedupe: skip if this URL already appears in the feed (already listed
+            # or previously rejected). The URL/title pre-filter cannot otherwise
+            # catch resurfaced prior human rejections (Watch 25).
+            link = item.get("link", "")
+            if link and link in existing_content:
+                log_skip(source_name, link, item.get("title", ""), "DUPLICATE_in_feed")
+                continue
             # Pre-filter: skip well-evidenced noise patterns before keyword relevance check
             skip, rule = should_skip(item, source_name)
             if skip:
@@ -135,12 +150,7 @@ def main():
     
     if new_entries:
         os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-        
-        existing_content = ""
-        if os.path.exists(OUTPUT_FILE):
-            with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
-                existing_content = f.read()
-        
+
         header = f"## 📅 {today_str} 업데이트\n"
         body = "\n".join(new_entries) + "\n\n"
         title = "# 🤖 자동화된 연구 피드 (Automated Research Feed)\n\n매일 아침 9시에 행동경제학 및 의사결정 관련 최신 아티클이 이곳에 업데이트됩니다.\n\n---\n\n"
