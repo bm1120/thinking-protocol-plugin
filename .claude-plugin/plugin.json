@@ -10,9 +10,5 @@
     "thinking-protocol",
     "second-brain",
     "decision-making"
-  ],
-  "skills": "system_files/.claude/skills",
-  "agents": "system_files/.claude/agents",
-  "commands": "commands",
-  "hooks": "hooks/plugin-hooks.json"
+  ]
 }
