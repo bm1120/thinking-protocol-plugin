@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "thinking-protocol-plugin",
-      "source": ".",
+      "source": "./",
       "description": "System layer for the Thinking-Protocol Second Brain vault: a six-stage decision protocol grounded in cognitive psychology and neuroscience."
     }
   ]
