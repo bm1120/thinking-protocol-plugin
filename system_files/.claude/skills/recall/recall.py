@@ -36,6 +36,16 @@ def classify_intent(query):
             return name
     return "know"  # default: treat as a "what do I know" recall
 
+# CJK (Korean/Chinese/Japanese) content words are commonly 2 chars, so keep len>=2.
+# Pure-ASCII tokens keep the len>2 cutoff to drop English stopwords (is, of, to, an).
+def _is_cjk(c):
+    o = ord(c)
+    return (0xAC00 <= o <= 0xD7A3 or 0x4E00 <= o <= 0x9FFF      # Hangul syllables, CJK
+            or 0x3040 <= o <= 0x30FF or 0x3130 <= o <= 0x318F)  # kana, Hangul jamo
+
+def keep_term(w):
+    return len(w) >= 2 if any(_is_cjk(c) for c in w) else len(w) > 2
+
 def detect_layers(root):
     """Return list of (layer_key, [files]) for layers that exist (non-empty)."""
     present = []
@@ -103,7 +113,7 @@ def main():
     all_keys = {k for k, _, _ in LAYERS}
     skipped = sorted(all_keys - present_keys)
 
-    terms = [w for w in re.split(r"\W+", args.query.lower()) if len(w) > 2]
+    terms = [w for w in re.split(r"\W+", args.query.lower()) if keep_term(w)]
     query_tags = set(terms)
     boost = INTENT_BOOST.get(intent, {})
 
