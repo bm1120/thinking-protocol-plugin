@@ -2,7 +2,7 @@
 # managed-by: thinking-protocol-plugin
 # Structure-aware recall engine. Stdlib only. Searches a vault's document
 # layers by purpose, degrading gracefully when optional layers are absent.
-import os, re, sys, glob, argparse
+import os, re, glob, argparse
 
 # (layer_key, glob_pattern_relative_to_root, base_priority)
 # Higher base_priority = more authoritative for "what do I already know" queries.
@@ -98,7 +98,8 @@ def main():
         print(f"intent={intent}")
         return
 
-    present_keys = {k for k, _ in detect_layers(root)}
+    layers = detect_layers(root)
+    present_keys = {k for k, _ in layers}
     all_keys = {k for k, _, _ in LAYERS}
     skipped = sorted(all_keys - present_keys)
 
@@ -111,7 +112,7 @@ def main():
 
     results = []
     base = {k: b for k, _, b in LAYERS}
-    for key, files in detect_layers(root):
+    for key, files in layers:
         for path in files:
             scored = score_file(path, terms, query_tags, base[key], boost.get(key, 0))
             if scored:
