@@ -18,9 +18,10 @@ Use this skill at exactly one moment: before a subagent hands off control to the
 1. Identify the current stage (one of Frame / Diverge / Incubate / Illuminate / Converge / Decide).
 2. Open `Stage_Transition_Rules.md` and locate the `N → M` block matching the current stage.
 3. Run every Pre-check item in that block. For each, record `pass | fail` with a one-line reason. Do NOT guess — if you can't verify a check, mark it `fail` and return the missing artifact.
-4. If all Pre-checks pass: produce the Hand-off artifact (described in the same block) and output `ADVANCE: next stage is <M>`.
-5. If any Pre-check fails: compare against the `Common rollback triggers` in the same block; if a match, output `ROLLBACK: go back to <previous stage>` with the trigger name.
-6. If the situation matches a scenario in §Failure handling of `Stage_Transition_Rules.md`: output `FAILURE-HANDLING: <scenario>` and follow that procedure instead.
+4. Run the **Self-deception scan** (`Stage_Transition_Rules.md`): for non-trivial decisions, scan your own reasoning against the rationalization table and name any fired red-flag plus its required check. Skip for `small` decisions (per §Right-size).
+5. If all Pre-checks pass AND the scan is clear (or fired flags are addressed): produce the Hand-off artifact (described in the same block) and output `ADVANCE: next stage is <M>`.
+6. If any Pre-check fails: compare against the `Common rollback triggers` in the same block; if a match, output `ROLLBACK: go back to <previous stage>` with the trigger name.
+7. If the situation matches a scenario in §Failure handling of `Stage_Transition_Rules.md`: output `FAILURE-HANDLING: <scenario>` and follow that procedure instead.
 
 ## Output format
 

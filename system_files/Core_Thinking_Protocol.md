@@ -16,6 +16,16 @@ The design combines four research axes — decision-making, problem-solving, cau
 
 > **Not a waterfall.** Stages may loop back (Converge may kick to Incubator). Right-size rule in §Right-size allows small decisions to collapse to 3 stages.
 
+## Iron Law
+
+Three meta-principles bind the whole protocol, above any single stage rule:
+
+1. **Check before acting.** Frame precedes action; verify against the source, never against memory or a feeling that "it's obviously X."
+2. **Judge by evidence, not confidence.** Feeling sure is not the same as having checked. (Extends the Cite-or-abstain invariant from claims to process.)
+3. **The letter protects the spirit.** Bending a rule's wording bends its intent. If a rule seems to block obviously-right work, that is a Right-size signal (§Right-size), not a license to skip.
+
+Cost framing: a one-minute check is cheaper than thirty minutes of work in the wrong direction. The pause is the cheap move.
+
 ## Right-size
 
 A decision is **small** when it is reversible within a day AND affects ≤ 1 of the four research axes AND has no stakeholder beyond the user. Small decisions may collapse the protocol to **Frame → Converge → Decide**.
@@ -25,6 +35,14 @@ Otherwise the decision is **non-trivial** and runs the full six stages.
 The Right-size check is owned by `framer` as part of Frame exit criteria. Do not allow a user's pressure ("빨리", "rush", "just decide") to override a non-trivial classification — it is a signal to check the classification, not a signal to skip stages. See CLAUDE.md Anti-Patterns §2.
 
 Under collapse, Converge's Entry criteria relaxes: the candidate set is produced inline during Frame by the user or `framer` (1–5 items), and Illuminate is skipped entirely. The Converge, Decide stages otherwise run their standard checklists.
+
+### Proportionality and per-stage abbreviation
+
+Right-size is not only a whole-decision switch (small → 3 stages). Within a non-trivial decision, an individual stage may run in lightweight form when its Exit criteria are obviously and verifiably already met (unambiguous scope → Frame is one line; an already-agreed candidate set → Diverge is confirmation, not generation).
+
+- **Obvious / agreed follow-up path:** a sub-decision the user has already explicitly decided is not re-litigated through the full protocol — confirm and proceed.
+- **One re-stay cycle cap:** beyond one re-stay/clarification loop, escalate rather than spin (Frame-restay `cycle N/1` precedent in `Stage_Transition_Rules.md`).
+- **The meta-discipline devices are themselves proportionality-bound:** the Iron Law check and the Self-deception scan (`Stage_Transition_Rules.md`) apply to non-trivial decisions only. Forcing full self-check onto small, reversible, agreed decisions reproduces the friction this rule prevents — and itself violates CLAUDE.md Anti-Pattern #6 (no over-application).
 
 ## TEST MODE
 
@@ -213,7 +231,7 @@ The Aha moment — re-entering the incubated set with a synthesis-ready mindset,
 
 ### Entry criteria
 
-The incubation revisit trigger has fired, and the agent has read the incubation log entry before doing anything else.
+The incubation revisit trigger has fired, and the agent has read the incubation log entry — the actual file, not a remembered summary — before doing anything else.
 
 ### Exit criteria
 
@@ -259,11 +277,13 @@ A 3–7 candidate shortlist from Illuminate.
 - Run `bias-check` skill.
 - Run `premortem-analysis` skill.
 - Causal-reasoning check (correlation vs. causation; missing confounders; at least one counterfactual).
+- Converge only within Frame's scope; do not widen the decision because a candidate is "related". Minimize the scope of the change/conclusion.
 
 ### Antipatterns
 
 - Leading with "this idea has merits" (merits go to Decide — Converge is where you try to break the idea).
 - Agreeing with the most recent prior turn (sycophancy defeats adversarial refinement).
+- Widening scope under "while we're at it" / "it's related" — that is scope creep; relevance is not a mandate (see Self-deception scan in `Stage_Transition_Rules.md`).
 
 ### Responsible subagent
 

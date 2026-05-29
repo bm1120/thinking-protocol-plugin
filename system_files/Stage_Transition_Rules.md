@@ -23,6 +23,21 @@ The `stage-transition-check` skill uses this file to answer "can we move to the 
 5. If any Pre-check fails, consult the "Common rollback triggers" section; revert one stage and re-run from there.
 6. If the situation matches §Failure handling, follow that procedure instead of normal transition.
 
+## Self-deception scan
+
+Before EVERY forward transition, the agent scans its OWN reasoning (not the candidate — that is `bias-check`, Converge-only) for process rationalizations:
+
+| Red-flag feeling | Rationalization | Reality / required check |
+|---|---|---|
+| "Grasped it well enough" | "Clear from context" | Felt-clear has been wrong. Verify against the source. |
+| "Start now, ask mid-way" | "Begin, clarify later" | Wrong-direction work → full rework. Frame first. |
+| "Did something like this before" | "Prior ≈ current" | Prior ≠ current; the same words differ by context. Re-read the actual prior. |
+| "While I'm at it, add this" | "It's related" | Scope creep. Related ≠ requested. Stay in Frame's scope. |
+| "Looks right, so it'll work" | "Plausible = correct" | Plausible ≠ verified. Run it / check it. |
+| "I'm confident" | confidence | Confidence ≠ evidence. Produce the evidence. |
+
+Right-size-governed: skip for `small` decisions (`Core_Thinking_Protocol.md` §Right-size). Run at every gate for non-trivial decisions.
+
 ## Forward transitions
 
 ### 1 → 2: Frame → Diverge
@@ -77,7 +92,7 @@ The `stage-transition-check` skill uses this file to answer "can we move to the 
 - Incubation log entry exists with an explicit revisit trigger.
 - The revisit trigger has fired (clock time passed, next session began, external event occurred).
 - User/agent has NOT evaluated the idea set during the delay.
-- Agent reads the log fresh (cold-start) before synthesis begins.
+- Agent reads the log fresh (cold-start) before synthesis begins — the remembered gist is not a substitute for re-reading the original.
 
 #### Hand-off artifact
 

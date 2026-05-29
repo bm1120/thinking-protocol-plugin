@@ -16,6 +16,8 @@ Mandatory on every non-trivial Converge pass. Use when:
 - The user expresses strong conviction about a candidate (confirmation bias flag).
 - The candidate's evidence base is a sample of 1 (survivorship flag).
 
+> **Scope note:** `bias-check` examines biases in the *candidate / decision content* and runs in Converge only. For the agent's own *process* rationalizations at any stage transition (e.g. "it's clear from context", "while I'm at it"), see the **Self-deception scan** in `Stage_Transition_Rules.md` — a different, complementary check.
+
 ## Procedure
 
 For each candidate under review, iterate through the 7 bias categories below. For each bias:
