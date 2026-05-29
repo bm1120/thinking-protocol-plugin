@@ -56,7 +56,23 @@ write_gitignore_entries
 [[ -f VERSION ]] || echo "$PLUGIN_VERSION" > VERSION
 chmod +x .claude/hooks/*.sh 2>/dev/null || true
 
+# Materialize templated files (CLAUDE.md, settings.json, <Domain>_Context) with
+# generic non-interactive defaults so greenfield yields a working vault in one step.
+# setup.sh is the single materialization authority; identity is customizable later.
+if ls ./*.tmpl >/dev/null 2>&1 && [[ -f setup.sh ]]; then
+  raw="$(basename "$(pwd)")"
+  pn="$(printf '%s' "$raw" | sed 's/[^A-Za-z0-9_]/_/g')"
+  [[ "$pn" =~ ^[A-Za-z] ]] || pn="V_$pn"
+  if PROJECT_NAME="$pn" VAULT_ABS_PATH="$(pwd)" DOMAIN_NAME="General" \
+       PRIMARY_DOMAINS="general decision-making" RECURRING_TASKS="(skip)" \
+       bash setup.sh; then
+    echo "Identity set to generic defaults (DOMAIN=General, PROJECT_NAME=$pn)."
+    echo "Customize: edit CLAUDE.md, or re-provision with the port-vault skill for tailored identity."
+  else
+    echo "WARNING: setup.sh materialization failed; .tmpl files left in place. Run ./setup.sh manually."
+  fi
+fi
+
 register_cron_if_consented || true
 
 echo "Greenfield install complete. VERSION=$PLUGIN_VERSION"
-echo "Run ./setup.sh --verify (if scaffold present) to confirm 8/8."

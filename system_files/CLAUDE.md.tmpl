@@ -1,0 +1,99 @@
+# CLAUDE.md — {{PROJECT_NAME}}
+
+> This file is read by Claude Code (and any AI reading the vault) at the start of every session. Keep it short, dense, and authoritative. Details live in linked Core files — do not duplicate them here.
+
+## 1. Project identity
+
+This vault is a **Thinking-Protocol Second Brain** grounded in psychology, behavioral economics, and neuroscience. Its coherent knowledge spans four research axes:
+
+- **Decision-Making** (biases, behavioral economics, choice architecture)
+- **Problem-Solving** (problem-space search, analogical reasoning, working-memory limits)
+- **Causal Reasoning** (correlation vs. causation, counterfactuals, confounding)
+- **Creativity** (divergent/convergent, Wallas stages, DMN/CEN switching, insight)
+
+The core protocol is **domain-agnostic**. Primary domains of application are **{{PRIMARY_DOMAINS}}**. Other decision-intensive domains may be added later without restructuring.
+
+## 2. The 6-stage thinking protocol
+
+Every non-trivial decision flows through these stages:
+
+**Frame → Diverge → Incubate → Illuminate → Converge → Decide**
+
+Full specification: `Core_Thinking_Protocol.md` (created in Phase 2).
+Stage transition rules: `Stage_Transition_Rules.md`.
+Research-driven rule updates: `Research_Integration_Protocol.md`.
+All rule changes are logged in `CHANGELOG.md`.
+
+**Right-size the protocol.** Small decisions may run Frame → Converge → Decide only. Large or ambiguous decisions run the full 6 stages. A decision is "small" when it is reversible within a day, affects ≤ 1 of the four research axes, and has no stakeholder beyond the user; otherwise it is non-trivial and runs the full protocol.
+
+## 3. Core behavioral rules
+
+- **Iron Law (meta-principle, above all stages).** Check before acting; judge by evidence, not confidence; the letter of a rule protects its spirit. See `Core_Thinking_Protocol.md` §Iron Law.
+- **Separate divergent and convergent modes.** Never evaluate during Diverge. Never generate novelty during Converge.
+- **Do not skip Incubate for non-trivial decisions.** If the user pushes to decide fast, check against the right-size rule; if still non-trivial, log the idea and insist on a pause.
+- **Causal scrutiny in Converge/Decide.** For any recommendation that implies a cause-and-effect claim, surface the causal model and consider confounders and counterfactuals.
+- **Cite or abstain.** If a psychology/neuroscience claim is not traceable to `03_Knowledge_Base/`, say "근거 없음" rather than asserting it.
+
+## 4. Folder write rules
+
+- `00_Idea_Inbox/` — free-capture, System-1 mode permitted. No review gate.
+- `03_Knowledge_Base/` — writes require passing the Research Integration Protocol (at least: Extract Claim → Map to Stage → CHANGELOG entry).
+- `05_Framework_Templates/` — structural edits require a CHANGELOG entry.
+- `*_Context.md` (root) and Core files — treat as specification surface; propose edits and ask before writing.
+- `.obsidian/` — **never read or write**.
+- `CHANGELOG.md` — append-only from AI actions; never rewrite history.
+
+## 5. Language convention
+
+- User-facing conversation: **Korean** (default).
+- System-prompt-style files (`*_Context.md`, `.claude/agents/*.md`, `.claude/skills/**/SKILL.md`): **English** (token efficiency, instruction adherence).
+- Obsidian notes (`00_*`, `02_*`, `03_*`, `04_*`, `05_*`): **Korean**.
+- Code comments in hook scripts: **English**.
+
+## 6. Agent & skill routing
+
+| Situation | Invoke |
+|---|---|
+| Problem is unclear, scope ambiguous | `framer` subagent |
+| Need fresh ideas, want to diverge | `ideator` subagent (+ `scamper-ideation`, `remote-association-matrix`, `worst-possible-idea`) |
+| Idea just generated, urge to evaluate | `incubator` subagent (+ `idea-incubation-log`) |
+| Returning from incubation, ready to synthesize insight | `ideator` (re-entry, carrying the incubated set) + optional `researcher` if new evidence surfaced |
+| Evaluating, filtering, critiquing | `validator` subagent (+ `bias-check`, `premortem-analysis`, `jobs-to-be-done`) |
+| Finalizing, communicating decision | `presenter` subagent (+ `strategic-decision-journal`) |
+| New research article to absorb | `researcher` subagent (+ `research-integration`) |
+| "Which stage am I in? Can I proceed?" | `stage-transition-check` skill |
+| IT startup/product strategy context | Read `<Domain>_Context.md` at vault root if it exists |
+| Data analysis context | Read `<Domain>_Context.md` at vault root if it exists |
+
+## 7. Research integration loop
+
+When new research enters `00_Idea_Inbox/Automated_Research_Feed.md`:
+
+1. **Capture** (already automated by `scripts/fetch_research.py`).
+2. **Extract Claim** — one actionable sentence.
+3. **Map to Stage** — which of the 6 stages does this change? If none, archive.
+4. **Draft Rule Change** — concrete diff for the affected file.
+5. **Shadow Test** — apply retroactively to 1–2 recent decisions; would it have helped?
+6. **Merge or Reject** — commit with CHANGELOG entry citing the source.
+
+See `Research_Integration_Protocol.md` for details (Phase 2).
+
+## Obsidian Format Guards
+
+- Preserve wikilinks `[[ ]]` and block refs `^id`. Never flatten to `[text](path)`.
+- Preserve frontmatter blocks (`---`). New notes include `tags:` and `date:` at minimum.
+- Preserve callouts (`> [!tip]`, `> [!warning]`). Do not convert to plain blockquotes.
+- Preserve embeds `![[note#section]]`.
+- Match existing tag conventions (`#knowledge`, `#dashboard`, `#creativity`, etc.); do not introduce new synonyms.
+- `.obsidian/` is off-limits. See permissions in `.claude/settings.json`.
+
+## Anti-Patterns (hard rules for every AI action)
+
+1. **No extrapolation beyond the knowledge base.** Do not assert psychology/neuroscience "common knowledge" without a `03_Knowledge_Base/` source. Absence = "근거 없음".
+2. **No stage-skipping under time pressure.** "빨리", "바로 결정해줘" triggers the right-size check, not a skip.
+3. **No unconditional agreement in Converge.** When the validator role is active, lead with a counter-argument or null result.
+4. **No writing to `03_Knowledge_Base/` without the protocol.** Research Integration Protocol passage is mandatory.
+5. **No framework name-dropping.** Invoking SCAMPER/JTBD means producing each sub-step's actual output, not a paragraph that references the name.
+6. **No speculative engineering.** Add a stage, rule, skill, or hook only when a concrete problem demonstrates its need. "미래 대비"는 사유가 아님.
+7. **No silent TEST MODE.** Bypassing Incubate requires all three activation requirements per `Core_Thinking_Protocol.md#test-mode` §Activation requirements (canonical; this anti-pattern is a summary). If any is missing, run Incubate normally. TEST outputs stay in `00_Idea_Inbox/` and MUST NOT be moved to any `04_Archives/` subpath.
+8. **Affordance is Decide-only.** Tagging ideas with "AI can do this / easy to implement" during Diverge OR weighting candidates by AI-affordance during Converge are both evaluation-in-disguise and create anchoring bias toward AI-assistable options. Affordance/executability is reported only at Decide via the Co-Execution Scope section in `presenter` output (see `Core_Thinking_Protocol.md` Stage 6 Checklist).

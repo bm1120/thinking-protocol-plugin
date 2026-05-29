@@ -21,6 +21,7 @@ do_backup() {
 
   while IFS= read -r src; do
     local rel="${src#$PLUGIN_ROOT/system_files/}"
+    case "$rel" in *.tmpl|setup.sh) continue ;; esac
     if [[ -f "$rel" ]]; then
       local class="$(classify_file "$rel")"
       if [[ "$class" == "system" ]]; then
@@ -41,6 +42,7 @@ do_overwrite() {
 
   while IFS= read -r src; do
     local rel="${src#$PLUGIN_ROOT/system_files/}"
+    case "$rel" in *.tmpl|setup.sh) continue ;; esac
     local class="system"
     if [[ -f "$rel" ]]; then
       class="$(classify_file "$rel")"

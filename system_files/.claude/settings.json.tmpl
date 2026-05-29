@@ -1,0 +1,67 @@
+{
+  "permissions": {
+    "allow": [
+      "Read({{VAULT_ABS_PATH}}/00_Idea_Inbox/**)",
+      "Write({{VAULT_ABS_PATH}}/00_Idea_Inbox/**)",
+      "Edit({{VAULT_ABS_PATH}}/00_Idea_Inbox/**)",
+      "Read({{VAULT_ABS_PATH}}/03_Knowledge_Base/**)",
+      "Read({{VAULT_ABS_PATH}}/05_Framework_Templates/**)",
+      "Read({{VAULT_ABS_PATH}}/04_Archives/**)",
+      "Read({{VAULT_ABS_PATH}}/CHANGELOG.md)",
+      "Bash(python3 scripts/fetch_research.py)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch)",
+      "Bash(git rev-parse:*)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Read({{VAULT_ABS_PATH}}/.obsidian/**)",
+      "Write({{VAULT_ABS_PATH}}/.obsidian/**)",
+      "Edit({{VAULT_ABS_PATH}}/.obsidian/**)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "env": {
+    "BASH_DEFAULT_TIMEOUT_MS": "180000"
+  },
+  "disabledMcpjsonServers": ["context7"],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-core.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
