@@ -20,6 +20,11 @@ check "greenfield_agents" '[[ -d .claude/agents ]] && [[ $(ls .claude/agents | w
 check "greenfield_skills" '[[ -d .claude/skills ]] && [[ $(ls .claude/skills | wc -l) -ge 16 ]]'
 check "gitignore_backup" 'grep -qxF "_backup/" .gitignore'
 
+# 1b. Greenfield settings.json carries claude-mem search permissions
+check "claudemem_smart_search" 'grep -q "mcp__plugin_claude-mem_mcp-search__smart_search" .claude/settings.json'
+check "claudemem_search"       'grep -q "mcp__plugin_claude-mem_mcp-search__search" .claude/settings.json'
+check "claudemem_get_obs"      'grep -q "mcp__plugin_claude-mem_mcp-search__get_observations" .claude/settings.json'
+
 # 2. Toggle one agent to forked (use a real plugin-shipped file)
 fork_target=".claude/agents/framer.md"
 if [[ -f "$fork_target" ]]; then
