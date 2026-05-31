@@ -42,6 +42,11 @@ if detect_vault; then
   write_gitignore_entries
   echo "$PLUGIN_VERSION" > VERSION
 
+  # .tmpl files (incl. settings.json.tmpl) are only rendered in the greenfield
+  # path, so existing vaults never receive new template-shipped permissions.
+  # Idempotently inject claude-mem search perms into the rendered settings.json.
+  merge_claude_mem_permissions
+
   echo ""
   echo "Migration complete: $VAULT_VERSION → $PLUGIN_VERSION"
   echo "Backup: $backup_dir/"

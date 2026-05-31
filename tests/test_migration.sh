@@ -38,8 +38,26 @@ fi
 # 3. Simulate version skew: drop vault VERSION
 echo "0.3.0" > VERSION
 
+# 3b. Simulate an existing vault whose settings.json predates claude-mem perms
+python3 - <<'PY'
+import json
+p=".claude/settings.json"
+d=json.load(open(p))
+allow=d["permissions"]["allow"]
+d["permissions"]["allow"]=[a for a in allow if "claude-mem" not in a]
+json.dump(d, open(p,"w"), indent=2, ensure_ascii=False)
+PY
+check "premerge_stripped" '! grep -q "claude-mem" .claude/settings.json'
+
 # 4. Run /migrate again (vault detected → migration mode), decline cron
 echo "n" | bash "$MIGRATE_CMD"
+
+# 4b. Migration MERGE: claude-mem perms restored, no dupes, valid JSON
+check "merge_smart_search" 'grep -q "mcp__plugin_claude-mem_mcp-search__smart_search" .claude/settings.json'
+check "merge_search"       'grep -q "mcp__plugin_claude-mem_mcp-search__search" .claude/settings.json'
+check "merge_get_obs"      'grep -q "mcp__plugin_claude-mem_mcp-search__get_observations" .claude/settings.json'
+check "merge_no_dupe"      '[[ "$(grep -c "mcp__plugin_claude-mem_mcp-search__smart_search" .claude/settings.json)" == "1" ]]'
+check "merge_valid_json"   'python3 -c "import json;json.load(open(\".claude/settings.json\"))"'
 
 # 5. Assertions
 check "post_migration_version" '[[ "$(cat VERSION)" == "$EXPECTED_VERSION" ]]'

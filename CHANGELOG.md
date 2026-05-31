@@ -2,6 +2,10 @@
 
 This file mirrors `_template/CHANGELOG.md` from the source vault. Entries here cover only releases of this plugin; full history with Watch list lives in the source vault.
 
+## v0.5.1 — 2026-06-01 — Migration claude-mem permission merge
+
+- **kind: fix** — /migrate(마이그레이션 경로)가 기존 볼트의 `.claude/settings.json`에 claude-mem 검색 권한 3종을 멱등 머지하도록 추가. .tmpl은 greenfield에서만 렌더되어 기존 볼트엔 전파되지 않던 문제 수정.
+
 ## v0.5.0 — 2026-06-01 — claude-mem dual-source recall + Diverge parallelization
 
 - **kind: skill** — recall을 이중소스로 업그레이드(볼트 파일 + claude-mem 세션 회상). claude-mem 미설치 시 볼트 파일 검색만 수행하며 graceful degrade. 출처 분리 2-섹션 출력.
