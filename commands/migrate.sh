@@ -7,6 +7,12 @@ source "$PLUGIN_ROOT/lib/migrate.sh"
 
 PLUGIN_VERSION="$(cat "$PLUGIN_ROOT/VERSION")"
 
+print_claude_mem_notice() {
+  echo ""
+  echo "[memory] 세션 간 회상을 쓰려면 claude-mem 플러그인을 활성화하세요."
+  echo "         미설치 시 recall은 볼트 파일 검색만 수행합니다(정상 동작)."
+}
+
 if detect_vault; then
   echo "Existing vault detected. Migration flow."
   VAULT_VERSION="$(cat VERSION 2>/dev/null || echo "0.0.0")"
@@ -45,6 +51,7 @@ if detect_vault; then
   register_cron_if_consented || true
 
   echo ""
+  print_claude_mem_notice
   echo "Run ./setup.sh --verify to confirm 8/8."
   exit 0
 fi
@@ -75,4 +82,5 @@ fi
 
 register_cron_if_consented || true
 
+print_claude_mem_notice
 echo "Greenfield install complete. VERSION=$PLUGIN_VERSION"

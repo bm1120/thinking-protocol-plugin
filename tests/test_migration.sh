@@ -14,7 +14,8 @@ PASS=0; FAIL=0
 check() { local label="$1" cond="$2"; if eval "$cond"; then PASS=$((PASS+1)); echo "PASS: $label"; else FAIL=$((FAIL+1)); echo "FAIL: $label"; fi; }
 
 # 1. Greenfield install via /migrate (decline cron with "n")
-echo "n" | bash "$MIGRATE_CMD"
+GREENFIELD_OUT="$(echo "n" | bash "$MIGRATE_CMD")"
+check "claudemem_notice" 'echo "$GREENFIELD_OUT" | grep -q "claude-mem"'
 check "greenfield_version" '[[ "$(cat VERSION)" == "$EXPECTED_VERSION" ]]'
 check "greenfield_agents" '[[ -d .claude/agents ]] && [[ $(ls .claude/agents | wc -l) -ge 6 ]]'
 check "greenfield_skills" '[[ -d .claude/skills ]] && [[ $(ls .claude/skills | wc -l) -ge 16 ]]'
