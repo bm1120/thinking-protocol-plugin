@@ -97,3 +97,11 @@ See `Research_Integration_Protocol.md` for details (Phase 2).
 6. **No speculative engineering.** Add a stage, rule, skill, or hook only when a concrete problem demonstrates its need. "미래 대비"는 사유가 아님.
 7. **No silent TEST MODE.** Bypassing Incubate requires all three activation requirements per `Core_Thinking_Protocol.md#test-mode` §Activation requirements (canonical; this anti-pattern is a summary). If any is missing, run Incubate normally. TEST outputs stay in `00_Idea_Inbox/` and MUST NOT be moved to any `04_Archives/` subpath.
 8. **Affordance is Decide-only.** Tagging ideas with "AI can do this / easy to implement" during Diverge OR weighting candidates by AI-affordance during Converge are both evaluation-in-disguise and create anchoring bias toward AI-assistable options. Affordance/executability is reported only at Decide via the Co-Execution Scope section in `presenter` output (see `Core_Thinking_Protocol.md` Stage 6 Checklist).
+
+## Recall (과거 작업 회상)
+
+새 분석/비자명 결정을 시작하기 전 `recall` 스킬을 사용한다. recall은 두 소스를 조회한다:
+- **과거 문서**: 이 볼트의 insights/decisions/KB/analyses/inbox 구조검색 (항상).
+- **과거 세션**: claude-mem이 활성화돼 있으면 세션 간 에피소드까지 회상. 미설치 시 자동 생략(정상).
+
+결과는 출처를 분리해 제시되며, recall은 포인터만 제안하고 메모를 직접 쓰지 않는다.
