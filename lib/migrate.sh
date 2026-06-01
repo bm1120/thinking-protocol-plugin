@@ -88,22 +88,26 @@ merge_claude_mem_permissions() {
   python3 - "$settings" <<'PY'
 import json, sys
 p = sys.argv[1]
-with open(p) as f:
-    d = json.load(f)
-allow = d.setdefault("permissions", {}).setdefault("allow", [])
-wanted = [
-    "mcp__plugin_claude-mem_mcp-search__smart_search",
-    "mcp__plugin_claude-mem_mcp-search__search",
-    "mcp__plugin_claude-mem_mcp-search__get_observations",
-]
-missing = [w for w in wanted if w not in allow]
-if missing:
-    # insert before the first WebFetch/WebSearch entry to mirror template ordering
-    idx = next((i for i, a in enumerate(allow) if a in ("WebFetch", "WebSearch")), len(allow))
-    allow[idx:idx] = missing
-    with open(p, "w") as f:
-        json.dump(d, f, indent=2, ensure_ascii=False)
-        f.write("\n")
+try:
+    with open(p) as f:
+        d = json.load(f)
+    allow = d.setdefault("permissions", {}).setdefault("allow", [])
+    wanted = [
+        "mcp__plugin_claude-mem_mcp-search__smart_search",
+        "mcp__plugin_claude-mem_mcp-search__search",
+        "mcp__plugin_claude-mem_mcp-search__get_observations",
+    ]
+    missing = [w for w in wanted if w not in allow]
+    if missing:
+        # insert before the first WebFetch/WebSearch entry to mirror template ordering
+        idx = next((i for i, a in enumerate(allow) if a in ("WebFetch", "WebSearch")), len(allow))
+        allow[idx:idx] = missing
+        with open(p, "w") as f:
+            json.dump(d, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+except Exception as e:
+    sys.stderr.write("WARN: could not merge claude-mem permissions into %s (%s); left unchanged.\n" % (p, e))
+    sys.exit(0)
 PY
 }
 

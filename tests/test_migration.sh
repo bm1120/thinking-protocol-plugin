@@ -59,6 +59,15 @@ check "merge_get_obs"      'grep -q "mcp__plugin_claude-mem_mcp-search__get_obse
 check "merge_no_dupe"      '[[ "$(grep -c "mcp__plugin_claude-mem_mcp-search__smart_search" .claude/settings.json)" == "1" ]]'
 check "merge_valid_json"   'python3 -c "import json;json.load(open(\".claude/settings.json\"))"'
 
+# 4c. Merge degrades gracefully on malformed settings.json (does not abort)
+MALDIR="$(mktemp -d)"; mkdir -p "$MALDIR/.claude"
+printf '{ this is not valid json ' > "$MALDIR/.claude/settings.json"
+( cd "$MALDIR" && source "$PLUGIN_ROOT/lib/migrate.sh" && merge_claude_mem_permissions ) 2>/dev/null
+rc=$?
+check "merge_malformed_ok" '[[ '"$rc"' -eq 0 ]]'
+check "merge_malformed_untouched" 'grep -q "this is not valid json" "$MALDIR/.claude/settings.json"'
+rm -rf "$MALDIR"
+
 # 5. Assertions
 check "post_migration_version" '[[ "$(cat VERSION)" == "$EXPECTED_VERSION" ]]'
 check "backup_created" '[[ -d _backup ]] && [[ $(ls _backup | wc -l) -ge 1 ]]'

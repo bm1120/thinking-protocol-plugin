@@ -1,6 +1,6 @@
 ---
 name: recall
-description: Retrieve relevant past work from this vault before starting new work or a decision. Runs a structure-aware search that prioritizes by document purpose (insights/decisions/KB/analyses/inbox) and degrades gracefully on vaults missing optional layers. Proposes pointers only — never writes memos.
+description: Retrieve relevant past work from this vault before starting new work or a decision. Runs a structure-aware search that prioritizes by document purpose (insights/decisions/KB/analyses/inbox) and degrades gracefully on vaults missing optional layers. Also searches past sessions via claude-mem when available. Proposes pointers only — never writes memos.
 system: true
 ---
 
