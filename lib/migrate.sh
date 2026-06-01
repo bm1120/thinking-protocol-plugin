@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # lib/migrate.sh — shared migration logic. Sourced by commands/migrate.sh.
 # Exports: detect_vault, do_backup, do_overwrite, write_gitignore_entries,
-# register_cron_if_consented.
+# register_cron_if_consented, merge_claude_mem_permissions.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -76,6 +76,39 @@ write_gitignore_entries() {
       echo "$entry" > .gitignore
     fi
   done
+}
+
+# Idempotently merge claude-mem search permissions into the existing vault's
+# .claude/settings.json. Operates on the cwd (vault root). .tmpl files are only
+# rendered in the greenfield path, so existing vaults need this injection.
+# No-op if settings.json is absent (greenfield handles new vaults).
+merge_claude_mem_permissions() {
+  local settings=".claude/settings.json"
+  [[ -f "$settings" ]] || return 0
+  python3 - "$settings" <<'PY'
+import json, sys
+p = sys.argv[1]
+try:
+    with open(p) as f:
+        d = json.load(f)
+    allow = d.setdefault("permissions", {}).setdefault("allow", [])
+    wanted = [
+        "mcp__plugin_claude-mem_mcp-search__smart_search",
+        "mcp__plugin_claude-mem_mcp-search__search",
+        "mcp__plugin_claude-mem_mcp-search__get_observations",
+    ]
+    missing = [w for w in wanted if w not in allow]
+    if missing:
+        # insert before the first WebFetch/WebSearch entry to mirror template ordering
+        idx = next((i for i, a in enumerate(allow) if a in ("WebFetch", "WebSearch")), len(allow))
+        allow[idx:idx] = missing
+        with open(p, "w") as f:
+            json.dump(d, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+except Exception as e:
+    sys.stderr.write("WARN: could not merge claude-mem permissions into %s (%s); left unchanged.\n" % (p, e))
+    sys.exit(0)
+PY
 }
 
 # Idempotent: returns 0 if entry added or already present, 1 if user declined.
