@@ -70,9 +70,11 @@ do_overwrite() {
 
 write_gitignore_entries() {
   # Called after system file copy in both greenfield and migration paths.
-  # Ensure Jev judgment logging has a directory in the vault root.
+  # Ensure Jev judgment logging, decision logs, and incubation buffers have directories.
   mkdir -p _logs
-  for entry in "_backup/" "_logs/"; do
+  mkdir -p _decision_log
+  mkdir -p _incubation_buffer
+  for entry in "_backup/" "_logs/" "_decision_log/" "_incubation_buffer/"; do
     if [[ -f .gitignore ]]; then
       grep -qxF "$entry" .gitignore || echo "$entry" >> .gitignore
     else
