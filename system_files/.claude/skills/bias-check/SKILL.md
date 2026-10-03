@@ -50,6 +50,33 @@ For each candidate under review, iterate through the 7 bias categories below. Fo
 
 If ≥ 2 biases are `active`, output a final line: `**Recommendation: route this candidate back to Diverge or Frame; the evaluation is compromised.**`
 
+## Jev 보조 판정 (선택적)
+
+각 bias 카테고리에 대해 Claude 분석을 완료한 뒤, `jev-judgment` 스킬을 호출하여 독립적인 Jev 보조 판정을 받는다.
+
+**호출 방법:**
+
+각 bias마다 Jev Noul 질문을 실행한다:
+```bash
+source lib/local_llm_router.sh
+# 예: sunk cost
+local_llm_query "noul" "<candidate description and evaluation context>" "Is sunk cost fallacy active in this evaluation?"
+```
+
+**결과 처리:**
+- Ollaya 미실행 → 이 섹션 전체 스킵 (Claude 분석만 사용)
+- Ollaya 가용 → 7개 bias 각각에 대해 Jev Noul 판정 실행
+- Claude와 Jev 불일치 시 → 테이블에 `⚠️` 열 추가:
+
+```
+| Bias | Claude | Jev | 일치 | Evidence | Counter-measure |
+|---|---|---|---|---|---|
+| Sunk cost | active | active(0.89) | ✅ | ... | ... |
+| Confirmation | active | not active(0.62) | ⚠️ | ... | ... |
+```
+
+**Jev confidence < 0.7인 판정은 "(low confidence)" 표시하고 Claude 판정을 우선한다.**
+
 ## Anti-patterns
 
 - Marking all biases "not applicable" without evidence. Default to `latent` if uncertain.
