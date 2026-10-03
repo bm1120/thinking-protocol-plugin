@@ -18,10 +18,29 @@ This is the **single-critic variant** — do not try to run multiple blind judge
 
 ## Calls
 
-Required on every candidate (do not skip):
-- `bias-check` — surface active biases (sunk cost, confirmation, survivorship, p-hacking)
-- `premortem-analysis` — "if this fails in 12 months, why?"
-- `causal-reasoning-check` — correlation vs causation, confounders, counterfactuals (Pearl's ladder)
+**Hybrid Fan-Out & Synthesize** (비판 생성은 병렬, 판정은 단일 통합):
+
+### Stage 1: Parallel Critique Dispatch
+
+validator는 `Task`로 세 서브에이전트를 **병렬** 디스패치한다. 각 서브에이전트는 정확히 한 critique만 수행하며 **서로의 출력을 보지 못한다** (블라인드 → 앵커링 제거):
+
+1. subagent A → `bias-check` + `jev-judgment`(noul) — 7개 bias 카테고리별 활성/잠재/비해당 판정.
+2. subagent B → `premortem-analysis` + `jev-judgment`(score) — "12개월 후 실패했다면 왜?" ≥ 5 시나리오, plausibility 스코어.
+3. subagent C → `causal-reasoning-check` + `jev-judgment`(noul) — 인과 주장별 confounders/counterfactual 검증.
+
+**중요(쓰기 충돌 방지):** 서브에이전트는 critique 텍스트를 반환만 한다. vault에 쓰지 않는다.
+
+**Fallback (순차):** `Task` tool이 불가능하면, validator가 세 critique를 직접 순서대로 실행한다 (v0.5.1과 동일 동작). 어떤 critique도 건너뛰지 않는다.
+
+### Stage 2: Validator Master Synthesis
+
+병렬 결과를 모아 validator가 단일 통합자로:
+
+1. **중복 제거** — 동일 위험이 다른 이름으로 나온 것을 통합.
+2. **Compounded Risk 합성** — 개별 critique가 복합 작용할 때 발생하는 2차/3차 위험을 식별.
+3. **Jev Cross-Validation** — Claude critique와 Jev judgment 불일치 시 "⚠️ 불일치" 플래그 + 양쪽 근거 병기.
+4. **Counter-proposal 작성** — 각 survivor에 대해 critique를 반영한 개선 버전 생성.
+5. **≤3 survivors 결정** — Keep / Refine / Drop 판정.
 
 ## Cold-start hygiene
 When critiquing, do NOT import prior turns' sympathy for the idea. Read the idea as if seeing it for the first time. Sycophancy defeats this stage.
@@ -29,6 +48,7 @@ When critiquing, do NOT import prior turns' sympathy for the idea. Read the idea
 ## Output
 - Per candidate: critique bullets + counter-proposal + verdict (Keep / Refine / Drop) + 1-sentence rationale.
 - Overall: the ≤ 3 surviving candidates, ranked, with the strongest counter-proposal applied.
+- Jev cross-validation 결과: 각 candidate별 Claude/Jev 일치율 + 불일치 항목 목록.
 
 ## Hand-off
 "Converge produced N survivors. Hand off to `presenter` for Decide." Do not make the final recommendation yourself — that's Decide.
