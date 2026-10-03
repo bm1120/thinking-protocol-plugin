@@ -33,6 +33,27 @@ When critiquing, do NOT import prior turns' sympathy for the idea. Read the idea
 ## Hand-off
 "Converge produced N survivors. Hand off to `presenter` for Decide." Do not make the final recommendation yourself — that's Decide.
 
+## Opt-in Adversarial Tribunal (외부 API Key 감지 시)
+
+Converge 판정 완료 후, 외부 모델 API Key가 감지되면 Tribunal을 제안한다:
+
+1. `lib/provider_adapter.sh`의 `detect_providers`로 가용 프로바이더 확인
+2. API Key가 하나 이상 존재하면 AskUserQuestion:
+   "외부 모델 API Key가 감지되었습니다 ({provider_status}). Adversarial Tribunal을 실행할까요? (y/엔터=skip)"
+3. skip → 기존 결과로 진행
+4. y → Tribunal 실행:
+   - Claude 판정 결과를 동일 프롬프트로 외부 모델에 전달
+   - Gemini: `ask-gemini` 스킬 (background)
+   - GPT: `codex:rescue` 에이전트
+   - 병렬 수집 후 합성:
+     - 3모델 합의 → 높은 확신으로 진행
+     - 2:1 분리 → 소수 의견 근거 병기, 다수 채택
+     - 3자 분열 → 모든 근거 병기, 사용자 판단 위임
+5. 결과는 `_logs/tribunal.jsonl`에 기록
+6. `max_round: 1` — 의견 분열 시 재확인 최대 1회
+
+**Tribunal은 Converge 단계에서만 실행된다.** 다른 단계에서 호출하지 않는다.
+
 ## Anti-patterns
 - "This idea has merits..." → In Converge, lead with the attacks. Merits go in Decide.
 - Accepting the user's favorite without critique.
