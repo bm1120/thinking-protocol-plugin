@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # lib/migrate.sh — shared migration logic. Sourced by commands/migrate.sh.
 # Exports: detect_vault, do_backup, do_overwrite, write_gitignore_entries,
-# register_cron_if_consented, merge_claude_mem_permissions.
+# register_cron_if_consented, merge_claude_mem_permissions, merge_local_llm_config.
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -69,6 +69,9 @@ do_overwrite() {
 }
 
 write_gitignore_entries() {
+  # Called after system file copy in both greenfield and migration paths.
+  # Ensure Jev judgment logging has a directory in the vault root.
+  mkdir -p _logs
   for entry in "_backup/" "_logs/"; do
     if [[ -f .gitignore ]]; then
       grep -qxF "$entry" .gitignore || echo "$entry" >> .gitignore
@@ -107,6 +110,34 @@ try:
             f.write("\n")
 except Exception as e:
     sys.stderr.write("WARN: could not merge claude-mem permissions into %s (%s); left unchanged.\n" % (p, e))
+    sys.exit(0)
+PY
+}
+
+# Idempotently add local LLM defaults to an existing vault's settings.json.
+# Operates on the cwd (vault root); preserve any existing local_llm config.
+# New vaults receive the same defaults from settings.json.tmpl.
+merge_local_llm_config() {
+  local settings=".claude/settings.json"
+  [[ -f "$settings" ]] || return 0
+  python3 - "$settings" <<'PY' || { echo "WARN: local_llm config merge skipped" >&2; return 0; }
+import json, sys
+p = sys.argv[1]
+try:
+    with open(p) as f:
+        d = json.load(f)
+    if "local_llm" not in d:
+        d["local_llm"] = {
+            "tier_override": "",
+            "model_override": "",
+            "ollaya_endpoint": "http://localhost:11434"
+        }
+        with open(p, "w") as f:
+            json.dump(d, f, indent=2, ensure_ascii=False)
+            f.write("\n")
+        print("local_llm config added to settings.json")
+except Exception as e:
+    sys.stderr.write("WARN: could not merge local_llm config into %s (%s); left unchanged.\n" % (p, e))
     sys.exit(0)
 PY
 }
