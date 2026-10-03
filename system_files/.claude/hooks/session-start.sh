@@ -34,6 +34,14 @@ else
   FEED_LINE="(feed file missing)"
 fi
 
+# Ollaya (local decision model) status check
+OLLAYA_STATUS=""
+if curl -sf --max-time 2 "http://localhost:11434/health" >/dev/null 2>&1; then
+  OLLAYA_STATUS="✅ Ollaya running — Jev local judgments enabled"
+else
+  OLLAYA_STATUS="ℹ️ Ollaya not running — Claude-only mode (install: https://github.com/ollaya-dev/ollaya)"
+fi
+
 # Emit context. Escape via jq to avoid JSON injection from CHANGELOG content.
 if command -v jq >/dev/null 2>&1; then
   jq -n \
@@ -41,10 +49,11 @@ if command -v jq >/dev/null 2>&1; then
     --arg changelog "$CHANGELOG_TAIL" \
     --arg feed "$FEED_LINE" \
     --arg reminder "$FEED_REMINDER" \
+    --arg ollaya "$OLLAYA_STATUS" \
     '{
       "hookSpecificOutput": {
         "hookEventName": "SessionStart",
-        "additionalContext": ("## Session start context\n\n- Today: " + $today + "\n- Research feed latest: " + $feed + (if $reminder != "" then "\n- " + $reminder else "" end) + "\n- CHANGELOG tail (last 5 lines):\n```\n" + $changelog + "\n```\n")
+        "additionalContext": ("## Session start context\n\n- Today: " + $today + "\n- Research feed latest: " + $feed + (if $reminder != "" then "\n- " + $reminder else "" end) + "\n- " + $ollaya + "\n- CHANGELOG tail (last 5 lines):\n```\n" + $changelog + "\n```\n")
       }
     }'
 else
