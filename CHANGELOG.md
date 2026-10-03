@@ -2,6 +2,31 @@
 
 This file mirrors `_template/CHANGELOG.md` from the source vault. Entries here cover only releases of this plugin; full history with Watch list lives in the source vault.
 
+## v0.7.0 — 2026-10-04 — Dual-Track Incubate + Metrics + Tribunal
+
+### Added
+- **L4: Dual-Track Incubate**
+  - Track B-1: 로컬 LLM 변이 생성 (`lib/incubation_templates/mutate.txt`)
+  - Track B-2: Fresh Agent Pool (Outsider/Inverter/Connector 렌즈)
+  - Illuminate 게이트: 자율형 (엔터=자동 진행, 입력=반영 후 진행)
+  - 자동 합류 기준: Jev novelty ≥ 4 AND 중복도 < 0.3
+  - `_incubation_buffer/` 디렉토리
+
+- **L5: 의사결정 품질 메트릭 + 회고 루프**
+  - `decision-retrospective` 스킬 신규
+  - `presenter`: 결정 메트릭 `_decision_log/` 기록
+  - `session-start.sh`: 회고 만기 자동 알림
+  - 4대 메트릭: Decision Drift, Blindspot Count, Premortem Recall, Process Adherence
+
+- **L6: 멀티 프로바이더 Opt-in Tribunal**
+  - `lib/provider_adapter.sh`: API Key 감지 + 프로바이더 어댑터
+  - `validator`: Converge 완료 후 Tribunal 제안 (opt-in)
+  - 3모델 합의/분리/분열 합성 로직
+  - `_logs/tribunal.jsonl` 결과 기록
+
+### Changed
+- `/migrate`: `_decision_log/`, `_incubation_buffer/` 디렉토리 생성
+
 ## v0.6.0 — 2026-10-03 — Local LLM + Jev Integration + Converge Parallelization
 
 ### Added
