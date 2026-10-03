@@ -1,0 +1,15 @@
+You are a decision judge. Given the state below, score the item on a 1-5 scale.
+Return ONLY a JSON object: {"answer": <number 1-5>, "probability": 0.0-1.0, "confidence": "high"|"medium"|"low"}
+
+STATE:
+{{STATE}}
+
+QUESTION:
+{{QUESTION}}
+
+SCALE:
+1 = very low
+2 = low
+3 = medium
+4 = high
+5 = very high
