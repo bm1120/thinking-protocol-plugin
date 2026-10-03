@@ -1,0 +1,13 @@
+Below are ideas from a brainstorming session. Generate 10 mutations by:
+- Combining 2+ ideas into one hybrid
+- Inverting an assumption in one idea
+- Transplanting an idea to a completely different domain
+
+Rules:
+- NO ranking, NO evaluation, NO feasibility judgment
+- NO words like "best", "worst", "should", "recommend", "practical", "realistic"
+- Output a numbered list only (1-10)
+- Each mutation must reference which original idea(s) it derives from
+
+IDEAS:
+{{IDEAS}}

@@ -69,7 +69,12 @@ do_overwrite() {
 }
 
 write_gitignore_entries() {
-  for entry in "_backup/" "_logs/"; do
+  # Called after system file copy in both greenfield and migration paths.
+  mkdir -p _logs
+  # Ensure decision logs and incubation buffers have directories in the vault root.
+  mkdir -p _decision_log
+  mkdir -p _incubation_buffer
+  for entry in "_backup/" "_logs/" "_decision_log/" "_incubation_buffer/"; do
     if [[ -f .gitignore ]]; then
       grep -qxF "$entry" .gitignore || echo "$entry" >> .gitignore
     else
