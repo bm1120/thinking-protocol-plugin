@@ -1,6 +1,6 @@
 {
   "name": "thinking-protocol-plugin",
-  "version": "0.4.1",
+  "version": "0.6.0",
   "description": "System layer for the Thinking-Protocol Second Brain vault. Provides skills, agents, hooks, Core protocol files, and the /migrate command.",
   "author": {
     "name": "bm1120"

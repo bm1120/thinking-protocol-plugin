@@ -2,6 +2,31 @@
 
 This file mirrors `_template/CHANGELOG.md` from the source vault. Entries here cover only releases of this plugin; full history with Watch list lives in the source vault.
 
+## v0.6.0 — 2026-10-03 — Local LLM + Jev Integration + Converge Parallelization
+
+### Added
+- **L1: Local LLM Router** (`lib/local_llm_router.sh`)
+  - Ollaya 기반 Jev/Kev 의사결정 모델 통합
+  - 자동 하드웨어 티어 감지 (Kev-0.8B ~ OpenJev-27B)
+  - settings.json `local_llm` 오버라이드 지원
+  - Graceful degrade: Ollaya 미실행 시 Claude 단독 모드
+
+- **L2: Jev 스킬 통합**
+  - `jev-judgment` 래퍼 스킬 신규
+  - `bias-check`: Jev Noul 보조 판정 통합
+  - `stage-transition-check`: Jev Choice 교차 검증 통합
+  - 프롬프트 템플릿: `lib/jev_templates/` (noul/choice/score)
+  - 판정 로그: `_logs/jev_judgments.jsonl`
+
+- **L3: Converge 하이브리드 병렬화**
+  - `validator`: 3개 critique를 Task tool로 병렬 fan-out
+  - Validator Master Synthesis: 중복 제거, Compounded Risk 합성, Jev Cross-Validation
+  - 순차 fallback 유지 (Task tool 불가 시)
+
+### Changed
+- `session-start.sh`: Ollaya 상태 표시 추가
+- `/migrate`: `_logs/` 디렉토리 생성 + `local_llm` 설정 멱등 머지
+
 ## v0.5.1 — 2026-06-01 — Migration claude-mem permission merge
 
 - **kind: fix** — /migrate(마이그레이션 경로)가 기존 볼트의 `.claude/settings.json`에 claude-mem 검색 권한 3종을 멱등 머지하도록 추가. .tmpl은 greenfield에서만 렌더되어 기존 볼트엔 전파되지 않던 문제 수정.
