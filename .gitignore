@@ -2,3 +2,9 @@
 *.log
 _logs/
 _backup/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
