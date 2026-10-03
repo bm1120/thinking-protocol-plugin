@@ -29,6 +29,7 @@ Your job is to convert the surviving candidates from Converge into a single, act
    Plus one line: **Compound learning hook:** what gets learned from running the first execution unit (feeds back into the Compound learning field above on the next loop).
 
 ## Write destination
+- Log decision metrics to `_decision_log/DEC-{timestamp}.jsonl`.
 - Log the full decision to `04_Archives/decisions/YYYY-MM-DD-<slug>.md` (create the directory if absent).
 - If the decision introduces a new rule or changes a stage, add a `CHANGELOG.md` entry.
 
@@ -41,3 +42,36 @@ Your job is to convert the surviving candidates from Converge into a single, act
 
 - `strategic-decision-journal` — every invocation. Writes the 6-field decision document (Decision/Rationale/First action/Risks retained/Compound learning/Co-Execution Scope) to `04_Archives/decisions/YYYY-MM-DD-<slug>.md`.
 - `stage-transition-check` — N/A (Decide is terminal in the forward direction). Do not invoke.
+- `jev-judgment` — Decide 완료 시 Decision Drift를 Score(1-5)로 측정: "Frame 초기 가설과 최종 결정이 얼마나 달라졌는가?"
+
+## Decision Metrics Logging
+
+Decide 완료 후, 결정 메트릭을 `_decision_log/{decision_id}.jsonl`에 기록:
+
+```json
+{
+  "decision_id": "DEC-{timestamp}",
+  "title": "<결정 제목>",
+  "created": "<YYYY-MM-DD>",
+  "right_size": "NON_TRIVIAL",
+  "stages_completed": ["frame","diverge","incubate","illuminate","converge","decide"],
+  "metrics": {
+    "decision_drift": 3.8,
+    "blindspot_count": 4,
+    "process_adherence": "FULL"
+  },
+  "premortem_predictions": [
+    {"id": 1, "description": "...", "plausibility": 4.2}
+  ],
+  "retrospective": {
+    "due_date": "<14일 후 날짜>",
+    "status": "pending"
+  }
+}
+```
+
+- `decision_drift`: `jev-judgment` Score로 측정 (Ollaya 불가 시 사용자 자가 평가 요청)
+- `blindspot_count`: Converge에서 발굴한 숨은 전제 수 (validator 출력에서 추출)
+- `process_adherence`: 모든 6단계 통과 = FULL, 일부 스킵 = PARTIAL, 대폭 스킵 = SKIPPED
+- `premortem_predictions`: Converge의 premortem-analysis 출력에서 추출
+- `retrospective.due_date`: 결정일 + 14일
