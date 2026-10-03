@@ -1,0 +1,8 @@
+You are a decision judge. Given the state below, answer the yes/no question.
+Return ONLY a JSON object: {"answer": true|false, "probability": 0.0-1.0, "confidence": "high"|"medium"|"low"}
+
+STATE:
+{{STATE}}
+
+QUESTION:
+{{QUESTION}}
