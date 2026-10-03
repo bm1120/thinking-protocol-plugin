@@ -44,3 +44,21 @@ Always include a bullet list of the Pre-check results (pass/fail + reason) so th
 - `Core_Thinking_Protocol.md` for Entry/Exit criteria per stage.
 
 Output to user in Korean when invoked during a Korean conversation; internal reasoning can stay English.
+
+## Jev 보조 판정 (선택적)
+
+Pre-check를 모두 완료한 뒤, `jev-judgment` 스킬로 독립적인 Jev Choice 판정을 받는다.
+
+**호출 방법:**
+
+```bash
+source lib/local_llm_router.sh
+local_llm_query "choice" "<pre-check results summary>" "Based on these pre-check results, should the protocol: ADVANCE to next stage, ROLLBACK to previous stage, or enter FAILURE_HANDLING?"
+```
+
+**결과 처리:**
+- Ollaya 미실행 → 스킵, Claude 판정만 사용
+- Claude와 Jev 일치 → "✅ 교차 검증 통과" 표시
+- Claude와 Jev 불일치 → "⚠️ 교차 검증 불일치" + 양쪽 근거를 Audit trail에 병기
+
+**이 Jev 보조 판정은 Claude의 판정을 뒤집지 않는다.** 불일치는 사용자에게 정보를 제공할 뿐이다.
